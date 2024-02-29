@@ -1,0 +1,10 @@
+[package]
+name = "ghoul"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = "0.13"
+bevy-ascii = {git = "https://github.com/MrVintage710/bevy-ascii-effect.git"}
