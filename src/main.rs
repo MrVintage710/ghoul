@@ -19,6 +19,8 @@ fn main() {
         .add_plugins(ScenePlugin)
         .add_plugins(GamePlugin)
         .add_plugins(LoadingPlugin)
+    
+        .add_systems(Startup, initialize_essentials)
     ;
     
     
@@ -29,4 +31,20 @@ fn main() {
     }
     
     app.run();
+}
+
+fn initialize_essentials(
+    mut commands : Commands
+) {
+    // Load the essientials first
+    commands.spawn((
+        Camera3dBundle {
+            transform: Transform::from_xyz(-1.0, 1.0, -1.0).with_rotation(Quat::from_euler(EulerRot::XYZ, 0.0, 3.8, 0.0)),
+            projection : Projection::Perspective(PerspectiveProjection { 
+                fov: 1.0, 
+                ..Default::default()
+            }),
+            ..default()
+        },
+    ));
 }

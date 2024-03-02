@@ -15,5 +15,9 @@ impl Plugin for ComputerWorldPlugin {
 }
 
 //==============================================================================
-//         ComputerWorldSystems
+//         Load ComputerWorld
 //==============================================================================
+
+pub struct ComputerWorldAssets {
+    
+}

@@ -42,17 +42,7 @@ fn load_scene(
     mut loading_tracker: ResMut<LoadingTracker>,
     asset_server: Res<AssetServer>,
 ) {
-    // Load the essientials first
-    commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_xyz(-1.0, 1.0, -1.0).with_rotation(Quat::from_euler(EulerRot::XYZ, 0.0, 3.8, 0.0)),
-            projection : Projection::Perspective(PerspectiveProjection { 
-                fov: 1.0, 
-                ..Default::default()
-            }),
-            ..default()
-        },
-    ));
+    
     // Setup for the loading stage
     let room_handle = asset_server.load("models/ghoul_room.glb#Scene0");
     let ambient_storm_handle = asset_server.load("audio/ambient_rain.ogg");
