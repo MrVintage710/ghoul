@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, render::view::RenderLayers};
 use game::GamePlugin;
 use loading::LoadingPlugin;
 use scene::ScenePlugin;
@@ -46,5 +46,6 @@ fn initialize_essentials(
             }),
             ..default()
         },
+        RenderLayers::layer(0)
     ));
 }

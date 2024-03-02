@@ -3,6 +3,8 @@ mod computer_world;
 use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::view::RenderLayers, scene::InstanceId};
 use crate::{game::GameState, loading::{LoadingTracker, SceneTracker}};
 
+use self::computer_world::{ComputerWorldAssets, ComputerWorldPlugin};
+
 //==============================================================================
 //         Scene Plugin
 //==============================================================================
@@ -12,6 +14,7 @@ pub struct ScenePlugin;
 impl Plugin for ScenePlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_plugins(ComputerWorldPlugin)
         
             .add_systems(Startup, load_scene)
             .add_systems(OnEnter(GameState::PreparingScene), start_room_initialization)
@@ -116,12 +119,28 @@ fn setup_room_scene_when_finished(
     mut commands : Commands,
     room_scene_assets : Res<RoomSceneAssets>,
     scene_spawner : ResMut<SceneSpawner>,
+    named_assets : Query<(&Name, &Parent)>,
+    game_world_assets : Res<ComputerWorldAssets>
 ) {
     let Some(instance) = room_scene_assets.room_scene else { return };
     
     if scene_spawner.instance_is_ready(instance) {
         for entity in scene_spawner.iter_instance_entities(instance) {
             commands.entity(entity).insert(RenderLayers::layer(0));
+            
+            if let Ok((name, parent)) = named_assets.get(entity) {
+                if &**name == "Mesh" {
+                    if let Ok((parrent_name, _)) = named_assets.get(**parent) {
+                        if &**parrent_name == "Screen" {
+                            commands.entity(entity).insert(game_world_assets.render_surface_mat.clone());
+                        }
+                    }
+                }
+                
+                // if name == "Room" {
+                //     commands.entity(entity).insert(Name::new("Room"));
+                // }
+            }
         }
     }
 }
