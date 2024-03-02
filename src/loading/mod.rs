@@ -55,6 +55,7 @@ fn check_for_loading_complete(
         }
     }).sum::<i32>();
     
+    #[cfg(debug_assertions)]
     screen_print!(sec: 0.1, "Scene Progress: {}/{}", loading_tracker.assets_to_load.len() as i32 - number_left, loading_tracker.assets_to_load.len());
     
     if number_left == 0 {
@@ -91,6 +92,7 @@ fn check_for_scene_complete (
         }
     }).sum::<i32>();
     
+    #[cfg(debug_assertions)]
     screen_print!(sec: 0.1, "Scene Progress: {}/{}", scene_tracker.instances.len() as i32 - number_left, scene_tracker.instances.len());
     
     if number_left == 0 {

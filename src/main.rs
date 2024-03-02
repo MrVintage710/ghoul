@@ -1,5 +1,5 @@
 use bevy::{prelude::*, render::view::RenderLayers};
-use game::GamePlugin;
+use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::ScenePlugin;
 
@@ -9,6 +9,8 @@ mod debug;
 mod scene;
 mod loading;
 mod game;
+
+pub mod camera;
 
 fn main() {
     
@@ -46,6 +48,6 @@ fn initialize_essentials(
             }),
             ..default()
         },
-        RenderLayers::layer(0)
+        RenderLayers::layer(0),
     ));
 }

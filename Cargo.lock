@@ -1997,6 +1997,7 @@ dependencies = [
  "bevy-ascii",
  "bevy-debug-text-overlay",
  "bevy-inspector-egui",
+ "smooth-bevy-cameras",
 ]
 
 [[package]]
@@ -3448,6 +3449,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6845563ada680337a52d43bb0b29f396f2d911616f6573012645b9e3d048a49"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "smooth-bevy-cameras"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2fd87c41a0df786a4f89ef25506520d5b7d89baa295c7f06d084913e09863a32"
+dependencies = [
+ "approx",
+ "bevy",
 ]
 
 [[package]]

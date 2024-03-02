@@ -40,8 +40,8 @@ fn init_computer_world(
     mut meshes : ResMut<Assets<Mesh>>,
 ) {
     let size = Extent3d {
-        width: 614,
-        height: 512,
+        width: 1228,
+        height: 1024,
         ..default()
     };
     

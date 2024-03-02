@@ -36,3 +36,10 @@ pub enum GameState {
 
 #[derive(Resource, Default)]
 pub struct GameFlags {}
+
+//==============================================================================
+//         Active Camera
+//==============================================================================
+
+#[derive(Component)]
+pub struct ActiveCamera;
