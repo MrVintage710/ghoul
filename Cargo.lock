@@ -425,10 +425,19 @@ version = "0.1.0"
 source = "git+https://github.com/MrVintage710/bevy-ascii-effect.git#6459ceb2ca4f31c2c4e7f13e16a5cbdd3b48b28b"
 dependencies = [
  "bevy 0.12.1",
- "bevy-inspector-egui",
+ "bevy-inspector-egui 0.22.1",
  "bevy_panorbit_camera",
  "image",
  "textwrap",
+]
+
+[[package]]
+name = "bevy-debug-text-overlay"
+version = "8.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0638988bc8f643ae6bb73a5ceebde9db7d7926904a05e961e4255d0f99408357"
+dependencies = [
+ "bevy 0.13.0",
 ]
 
 [[package]]
@@ -437,13 +446,13 @@ version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c3efee9165f9be9c6a180c6a9bbb4bd39ee0a98a594f4cb7127704e15415cdd"
 dependencies = [
- "bevy-inspector-egui-derive",
+ "bevy-inspector-egui-derive 0.22.0",
  "bevy_app 0.12.1",
  "bevy_asset 0.12.1",
  "bevy_core 0.12.1",
  "bevy_core_pipeline 0.12.1",
  "bevy_ecs 0.12.1",
- "bevy_egui",
+ "bevy_egui 0.24.0",
  "bevy_hierarchy 0.12.1",
  "bevy_log 0.12.1",
  "bevy_math 0.12.1",
@@ -453,7 +462,36 @@ dependencies = [
  "bevy_time 0.12.1",
  "bevy_utils 0.12.1",
  "bevy_window 0.12.1",
- "egui",
+ "egui 0.24.1",
+ "image",
+ "once_cell",
+ "pretty-type-name",
+ "smallvec",
+]
+
+[[package]]
+name = "bevy-inspector-egui"
+version = "0.23.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9cf0713a3456f6533d274a4ff6a124fc7ec5de89b9dac25c7eca73c9799badcc"
+dependencies = [
+ "bevy-inspector-egui-derive 0.23.0",
+ "bevy_app 0.13.0",
+ "bevy_asset 0.13.0",
+ "bevy_core 0.13.0",
+ "bevy_core_pipeline 0.13.0",
+ "bevy_ecs 0.13.0",
+ "bevy_egui 0.25.0",
+ "bevy_hierarchy 0.13.0",
+ "bevy_log 0.13.0",
+ "bevy_math 0.13.0",
+ "bevy_pbr 0.13.0",
+ "bevy_reflect 0.13.0",
+ "bevy_render 0.13.0",
+ "bevy_time 0.13.0",
+ "bevy_utils 0.13.0",
+ "bevy_window 0.13.0",
+ "egui 0.26.2",
  "image",
  "once_cell",
  "pretty-type-name",
@@ -465,6 +503,17 @@ name = "bevy-inspector-egui-derive"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5ec77479f56958ed1b2802c3129ebc704d12245627b2d4dae61f11e6ed5c21b1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.52",
+]
+
+[[package]]
+name = "bevy-inspector-egui-derive"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3c488161a04a123e10273e16d4533945943fcfcf345f066242790e8977aee2d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -899,8 +948,22 @@ checksum = "c90c01202dbcebc03315a01ea71553b35e1f20b0da6b1cc8c2605344032a3d96"
 dependencies = [
  "arboard",
  "bevy 0.12.1",
- "egui",
+ "egui 0.24.1",
  "thread_local",
+ "webbrowser",
+]
+
+[[package]]
+name = "bevy_egui"
+version = "0.25.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b84bfb8d4104a1467910cf2090bc6a6d394ebde39c0dbc02397b45aa9ef88e80"
+dependencies = [
+ "arboard",
+ "bevy 0.13.0",
+ "egui 0.26.2",
+ "thread_local",
+ "web-sys",
  "webbrowser",
 ]
 
@@ -2555,13 +2618,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "ecolor"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03cfe80b1890e1a8cdbffc6044d6872e814aaf6011835a2a5e2db0e5c5c4ef4e"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
 name = "egui"
 version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c55bcb864b764eb889515a38b8924757657a250738ad15126637ee2df291ee6b"
 dependencies = [
  "ahash",
- "epaint",
+ "epaint 0.24.1",
+ "nohash-hasher",
+]
+
+[[package]]
+name = "egui"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "180f595432a5b615fc6b74afef3955249b86cfea72607b40740a4cd60d5297d0"
+dependencies = [
+ "ahash",
+ "epaint 0.26.2",
  "nohash-hasher",
 ]
 
@@ -2576,6 +2659,15 @@ name = "emath"
 version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a045c6c0b44b35e98513fc1e9d183ab42881ac27caccb9fa345465601f56cce4"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
+name = "emath"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6916301ecf80448f786cdf3eb51d9dbdd831538732229d49119e2d4312eaaf09"
 dependencies = [
  "bytemuck",
 ]
@@ -2653,8 +2745,23 @@ dependencies = [
  "ab_glyph",
  "ahash",
  "bytemuck",
- "ecolor",
- "emath",
+ "ecolor 0.24.1",
+ "emath 0.24.1",
+ "nohash-hasher",
+ "parking_lot",
+]
+
+[[package]]
+name = "epaint"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77b9fdf617dd7f58b0c8e6e9e4a1281f730cde0831d40547da446b2bb76a47af"
+dependencies = [
+ "ab_glyph",
+ "ahash",
+ "bytemuck",
+ "ecolor 0.26.2",
+ "emath 0.26.2",
  "nohash-hasher",
  "parking_lot",
 ]
@@ -2947,6 +3054,8 @@ version = "0.1.0"
 dependencies = [
  "bevy 0.13.0",
  "bevy-ascii",
+ "bevy-debug-text-overlay",
+ "bevy-inspector-egui 0.23.2",
 ]
 
 [[package]]
