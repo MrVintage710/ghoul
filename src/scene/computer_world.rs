@@ -1,7 +1,9 @@
-use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*, render::{mesh::shape::Cube, render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages}, view::RenderLayers}};
+use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*, render::{camera::RenderTarget, mesh::shape::Cube, render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages}, view::RenderLayers}, window::WindowRef};
 use bevy_ascii::prelude::*;
 
-use crate::game::GameState;
+use crate::game::{ActiveCamera, GameState};
+
+use super::{RoomCamera};
 
 //==============================================================================
 //         ComputerWorldPlugin
@@ -16,6 +18,9 @@ impl Plugin for ComputerWorldPlugin {
         
             .add_systems(Startup, init_computer_world)
             .add_systems(Update, rotate_test_cubes.run_if(in_state(GameState::Active)))
+            // .add_systems(PostUpdate, switch_to_computer_world)
+        
+            // .add_event::<SwitchToComputerWorld>()
         ;
     }
 }
@@ -27,6 +32,7 @@ impl Plugin for ComputerWorldPlugin {
 #[derive(Resource)]
 pub struct ComputerWorldAssets {
     pub render_surface_mat : Handle<StandardMaterial>,
+    pub render_surface_image : Handle<Image>,
 }
 
 //==============================================================================
@@ -63,29 +69,31 @@ fn init_computer_world(
     };
     image.resize(size);
     
-    let surface_handle = images.add(image);
+    let render_surface_image = images.add(image);
     
     commands.spawn((
         Camera3dBundle {
             transform: Transform::from_translation(Vec3::new(0.0, 1.5, 5.0)).looking_at(Vec3::ZERO, Vec3::Y),
             camera : Camera {
-                target : surface_handle.clone().into(),
+                target : render_surface_image.clone().into(),
                 ..Default::default()
             },
             ..Default::default()
         },
         AsciiCamera::default(),
-        RenderLayers::layer(1)
+        RenderLayers::layer(1),
+        ComputerCamera,
     ));
     
     let render_surface_mat = materials.add(StandardMaterial {
-        base_color_texture: Some(surface_handle.clone()),
+        base_color_texture: Some(render_surface_image.clone()),
         emissive: Color::LIME_GREEN,
         ..Default::default()
     });
     
     commands.insert_resource(ComputerWorldAssets {
         render_surface_mat,
+        render_surface_image,
     });
     
     let mesh = meshes.add(Cube::new(1.0));
@@ -123,6 +131,41 @@ fn init_computer_world(
         RenderLayers::layer(1)
     ));
 }
+
+//==============================================================================
+//         Switch to ComputerWorld Event
+//==============================================================================
+
+// #[derive(Event, Debug)]
+// pub struct SwitchToComputerWorld;
+
+// pub fn switch_to_computer_world(
+//     mut commands : Commands,
+//     mut events : EventReader<SwitchToComputerWorld>,
+//     mut computer_world_camera : Query<(Entity, &mut Camera, &mut Projection), (With<ComputerCamera>, Without<RoomCamera>)>,
+//     mut room_camera : Query<(Entity, &mut Camera), (With<RoomCamera>, With<ActiveCamera>, Without<ComputerCamera>)>,
+//     input : Res<ButtonInput<KeyCode>>,
+// ) {
+//     if !events.is_empty() || input.just_pressed(KeyCode::F1) {
+//         let Ok((comp_cam_entity, mut comp_cam, mut comp_projection)) = computer_world_camera.get_single_mut() else { return };
+//         let Ok((room_cam_entity, mut room_cam)) = room_camera.get_single_mut() else { return };
+//         println!("Switching to Computer World");
+//         comp_cam.target = RenderTarget::Window(WindowRef::Primary);
+//         room_cam.is_active = false;
+//         *comp_projection = Projection::default();
+//         commands.entity(room_cam_entity).remove::<ActiveCamera>();
+//         commands.entity(comp_cam_entity).insert(ActiveCamera);
+//     }
+    
+//     events.read();
+// }
+
+//==============================================================================
+//         Marker Components
+//==============================================================================
+
+#[derive(Debug, Component)]
+pub struct ComputerCamera;
 
 //==============================================================================
 //         Test

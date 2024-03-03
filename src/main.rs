@@ -1,7 +1,7 @@
 use bevy::{prelude::*, render::view::RenderLayers};
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
-use scene::ScenePlugin;
+use scene::{RoomCamera, ScenePlugin};
 
 #[cfg(debug_assertions)]
 mod debug;
@@ -49,5 +49,7 @@ fn initialize_essentials(
             ..default()
         },
         RenderLayers::layer(0),
+        RoomCamera,
+        ActiveCamera,
     ));
 }

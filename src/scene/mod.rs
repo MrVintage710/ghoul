@@ -1,9 +1,10 @@
-mod computer_world;
+pub mod computer_world;
 
-use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::view::RenderLayers, scene::InstanceId};
-use crate::{game::GameState, loading::{LoadingTracker, SceneTracker}};
+use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, scene::InstanceId};
+use bevy_inspector_egui::bevy_egui::setup_new_windows_system;
+use crate::{game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
 
-use self::computer_world::{ComputerWorldAssets, ComputerWorldPlugin};
+use self::computer_world::{ComputerCamera, ComputerWorldAssets, ComputerWorldPlugin};
 
 //==============================================================================
 //         Scene Plugin
@@ -19,9 +20,19 @@ impl Plugin for ScenePlugin {
             .add_systems(Startup, load_scene)
             .add_systems(OnEnter(GameState::PreparingScene), start_room_initialization)
             .add_systems(OnEnter(GameState::Active), setup_room_scene_when_finished)
+            // .add_systems(PostUpdate, switch_to_room_world)
+        
+            // .add_event::<SwitchToRoom>()
         ;
     }
 }
+
+//==============================================================================
+//         Labels
+//==============================================================================
+
+#[derive(Debug, Component)]
+pub struct RoomCamera;
 
 //==============================================================================
 //         Scene Loading
@@ -144,3 +155,36 @@ fn setup_room_scene_when_finished(
         }
     }
 }
+
+//==============================================================================
+//         Switch to Room Event
+//==============================================================================
+
+// #[derive(Event, Debug)]
+// pub struct SwitchToRoom;
+
+// pub fn switch_to_room_world(
+//     mut commands : Commands,
+//     mut events : EventReader<SwitchToRoom>,
+//     mut computer_world_camera : Query<(Entity, &mut Camera, &mut Projection), (With<ComputerCamera>, Without<RoomCamera>)>,
+//     mut room_camera : Query<(Entity, &mut Camera), (With<RoomCamera>, With<ActiveCamera>, Without<ComputerCamera>)>,
+//     computer_world_assets : Res<ComputerWorldAssets>,
+//     input : Res<ButtonInput<KeyCode>>,
+//     in_game_world : Res<>
+// ) {
+//     if !events.is_empty() || input.just_pressed(KeyCode::F1) {
+//         println!("{} {}", room_camera.iter().count(), computer_world_camera.iter().count());
+//         let Ok((comp_cam_entity, mut comp_cam, mut comp_projection)) = computer_world_camera.get_single_mut() else { return };
+//         let Ok((room_cam_entity, mut room_cam)) = room_camera.get_single_mut() else { return };
+        
+//         println!("Switching to room world");
+        
+//         comp_cam.target = RenderTarget::Image(computer_world_assets.render_surface_image.clone());
+//         room_cam.is_active = true;
+//         *comp_projection = Projection::default();
+//         commands.entity(room_cam_entity).remove::<ActiveCamera>();
+//         commands.entity(comp_cam_entity).insert(ActiveCamera);
+//     }
+    
+//     events.read();
+// }
