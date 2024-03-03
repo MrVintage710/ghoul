@@ -147,44 +147,11 @@ fn setup_room_scene_when_finished(
                         }
                     }
                 }
-                
-                // if name == "Room" {
-                //     commands.entity(entity).insert(Name::new("Room"));
-                // }
             }
         }
     }
 }
 
 //==============================================================================
-//         Switch to Room Event
+//         
 //==============================================================================
-
-// #[derive(Event, Debug)]
-// pub struct SwitchToRoom;
-
-// pub fn switch_to_room_world(
-//     mut commands : Commands,
-//     mut events : EventReader<SwitchToRoom>,
-//     mut computer_world_camera : Query<(Entity, &mut Camera, &mut Projection), (With<ComputerCamera>, Without<RoomCamera>)>,
-//     mut room_camera : Query<(Entity, &mut Camera), (With<RoomCamera>, With<ActiveCamera>, Without<ComputerCamera>)>,
-//     computer_world_assets : Res<ComputerWorldAssets>,
-//     input : Res<ButtonInput<KeyCode>>,
-//     in_game_world : Res<>
-// ) {
-//     if !events.is_empty() || input.just_pressed(KeyCode::F1) {
-//         println!("{} {}", room_camera.iter().count(), computer_world_camera.iter().count());
-//         let Ok((comp_cam_entity, mut comp_cam, mut comp_projection)) = computer_world_camera.get_single_mut() else { return };
-//         let Ok((room_cam_entity, mut room_cam)) = room_camera.get_single_mut() else { return };
-        
-//         println!("Switching to room world");
-        
-//         comp_cam.target = RenderTarget::Image(computer_world_assets.render_surface_image.clone());
-//         room_cam.is_active = true;
-//         *comp_projection = Projection::default();
-//         commands.entity(room_cam_entity).remove::<ActiveCamera>();
-//         commands.entity(comp_cam_entity).insert(ActiveCamera);
-//     }
-    
-//     events.read();
-// }

@@ -2,7 +2,7 @@ use bevy::{diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin}, prelude::
 use bevy_debug_text_overlay::{screen_print, OverlayPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::game::GameState;
+use crate::{camera::fly::ToggleFlyCam, game::GameState};
 
 //==============================================================================
 //         Debug Plugin
@@ -71,9 +71,14 @@ fn display_debug_info(
 
 fn toggle_debug_mode(
     mut debug_mode: ResMut<DebugMode>,
+    mut fly_cam_event: EventWriter<ToggleFlyCam>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
     if input.just_pressed(KeyCode::F3) {
         debug_mode.toggle();
+    }
+    
+    if input.just_pressed(KeyCode::F4) {
+        fly_cam_event.send(ToggleFlyCam);
     }
 }

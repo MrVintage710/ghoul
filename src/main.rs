@@ -1,4 +1,5 @@
 use bevy::{prelude::*, render::view::RenderLayers};
+use camera::CameraPlugin;
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
@@ -21,6 +22,7 @@ fn main() {
         .add_plugins(ScenePlugin)
         .add_plugins(GamePlugin)
         .add_plugins(LoadingPlugin)
+        .add_plugins(CameraPlugin)
     
         .add_systems(Startup, initialize_essentials)
     ;

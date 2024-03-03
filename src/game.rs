@@ -97,16 +97,16 @@ pub fn switch_game_world(
                 *comp_projection = Projection::default();
                 
                 room_cam.is_active = false;
-                commands.entity(comp_cam_entity).remove::<ActiveCamera>();
-                commands.entity(room_cam_entity).insert(ActiveCamera);
+                commands.entity(room_cam_entity).remove::<ActiveCamera>();
+                commands.entity(comp_cam_entity).insert(ActiveCamera);
             },
             GameWorld::Game => {
                 comp_cam.target = RenderTarget::Image(computer_world_assets.render_surface_image.clone());
                 *comp_projection = Projection::default();
                 
                 room_cam.is_active = true;
-                commands.entity(room_cam_entity).remove::<ActiveCamera>();
-                commands.entity(comp_cam_entity).insert(ActiveCamera);
+                commands.entity(comp_cam_entity).remove::<ActiveCamera>();
+                commands.entity(room_cam_entity).insert(ActiveCamera);
             },
         }
         
