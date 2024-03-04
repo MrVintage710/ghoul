@@ -79,9 +79,9 @@ fn flycam_control(
 ) {
     for (mut flycam, mut transform) in flycams.iter_mut() {
         screen_print!("FlyCam Active");
+        let (mut window, mut egui_context) = window.single_mut();
     
         if mouse_input.pressed(MouseButton::Left) {
-            let (mut window, mut egui_context) = window.single_mut();
             if !egui_context.get_mut().is_pointer_over_area() {
                 window.cursor.grab_mode = CursorGrabMode::Confined;
                 window.cursor.visible = false;
@@ -92,41 +92,42 @@ fn flycam_control(
                 }
             }
         } else {
-            let (mut window, egui_mouse_pos) = window.single_mut();
             window.cursor.grab_mode = CursorGrabMode::None;
             window.cursor.visible = true;
         }
         
-        let mut new_pos = transform.translation;
-        
-        if key_input.pressed(KeyCode::KeyW) {
-            new_pos += transform.forward() * 0.5 * time.delta_seconds();
+        if !egui_context.get_mut().is_pointer_over_area() {
+            let mut new_pos = transform.translation;
+            
+            if key_input.pressed(KeyCode::KeyW) {
+                new_pos += transform.forward() * 0.5 * time.delta_seconds();
+            }
+            
+            if key_input.pressed(KeyCode::KeyS) {
+                new_pos -= transform.forward() * 0.5 * time.delta_seconds();
+            }
+            
+            if key_input.pressed(KeyCode::KeyA) {
+                new_pos -= transform.right() * 0.5 * time.delta_seconds();
+            }
+            
+            if key_input.pressed(KeyCode::KeyD) {
+                new_pos += transform.right() * 0.5 * time.delta_seconds();
+            }
+            
+            if key_input.pressed(KeyCode::Space) {
+                new_pos += Direction3d::Y * 0.5 * time.delta_seconds();
+            }
+            
+            if key_input.pressed(KeyCode::ShiftLeft) {
+                new_pos -= Direction3d::Y * 0.5 * time.delta_seconds();
+            }
+            
+            let pitch = Quat::from_rotation_x(flycam.pitch);
+            let yaw = Quat::from_rotation_y(flycam.yaw);
+            
+            transform.translation = new_pos;
+            transform.rotation = yaw * pitch;
         }
-        
-        if key_input.pressed(KeyCode::KeyS) {
-            new_pos -= transform.forward() * 0.5 * time.delta_seconds();
-        }
-        
-        if key_input.pressed(KeyCode::KeyA) {
-            new_pos -= transform.right() * 0.5 * time.delta_seconds();
-        }
-        
-        if key_input.pressed(KeyCode::KeyD) {
-            new_pos += transform.right() * 0.5 * time.delta_seconds();
-        }
-        
-        if key_input.pressed(KeyCode::Space) {
-            new_pos += Direction3d::Y * 0.5 * time.delta_seconds();
-        }
-        
-        if key_input.pressed(KeyCode::ShiftLeft) {
-            new_pos -= Direction3d::Y * 0.5 * time.delta_seconds();
-        }
-        
-        let pitch = Quat::from_rotation_x(flycam.pitch);
-        let yaw = Quat::from_rotation_y(flycam.yaw);
-        
-        transform.translation = new_pos;
-        transform.rotation = yaw * pitch;
     }
 }

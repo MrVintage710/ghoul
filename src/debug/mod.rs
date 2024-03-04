@@ -96,9 +96,10 @@ fn debug_camera_paths(
 
 fn debug_camera_zones (
     mut gizmos: Gizmos,
-    camera_zones: Query<(&Transform, &CameraZone)>,
+    camera_zones: Query<(&GlobalTransform, &CameraZone)>,
 ) {
     for (transform, zone) in camera_zones.iter() {
-        gizmos.primitive_3d(zone.bounds, transform.translation, transform.rotation, Color::WHITE);
+        let (_, rotation, translation) = transform.to_scale_rotation_translation();
+        gizmos.primitive_3d(zone.bounds, translation, rotation, Color::WHITE);
     }
 }

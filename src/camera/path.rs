@@ -1,6 +1,8 @@
 use std::{collections::VecDeque, time::Duration};
 
 use bevy::{ecs::{component::Component, system::Commands}, math::{cubic_splines::CubicCurve, Vec3}, prelude::*, reflect};
+
+use crate::anim::util::EasingFunction;
 //==============================================================================
 //         CameraPathFollower
 //==============================================================================
@@ -47,6 +49,12 @@ pub struct CameraPathSegment {
 }
 
 impl CameraPathFollower {
+    pub fn to_transform(transform : Transform, duration : f32) -> Self {
+        let mut cam_path = Self::default();
+        cam_path.push_node(transform, duration, EasingFunction::EaseInOut);
+        cam_path
+    }
+    
     pub fn push_node(&mut self, target : Transform, duration : f32, curve : impl Into<CubicSegment<Vec2>>) {
         if self.path.is_empty() {
             self.timer = Timer::new(Duration::from_secs_f32(duration), TimerMode::Once);
