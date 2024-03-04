@@ -2,7 +2,7 @@ use bevy::{diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin}, prelude::
 use bevy_debug_text_overlay::{screen_print, OverlayPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::{camera::fly::ToggleFlyCam, game::GameState};
+use crate::{camera::{fly::ToggleFlyCam, path::CameraPathFollower}, game::GameState};
 
 //==============================================================================
 //         Debug Plugin
@@ -19,7 +19,7 @@ impl Plugin for DebugPlugin {
                 FrameTimeDiagnosticsPlugin,
             ))
             
-            .add_systems(Update, (close_on_esc, display_debug_info, toggle_debug_mode))
+            .add_systems(Update, (close_on_esc, display_debug_info, toggle_debug_mode, debug_camera_paths))
         
             .init_resource::<DebugMode>()
         ;
@@ -80,5 +80,16 @@ fn toggle_debug_mode(
     
     if input.just_pressed(KeyCode::F4) {
         fly_cam_event.send(ToggleFlyCam);
+    }
+}
+
+fn debug_camera_paths(
+    mut gizmos : Gizmos,
+    cameras : Query<(&Transform, &CameraPathFollower)>,
+) {
+    for (transform, path_follower) in cameras.iter() {
+        let positions = path_follower.iter_transforms().map(|t| t.target_transform.translation).collect::<Vec<_>>();
+        gizmos.linestrip(positions, Color::WHITE);
+        gizmos.sphere(transform.translation, transform.rotation, 0.05, Color::AZURE);
     }
 }

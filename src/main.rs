@@ -1,5 +1,6 @@
+use anim::util::EasingFunction;
 use bevy::{prelude::*, render::view::RenderLayers};
-use camera::CameraPlugin;
+use camera::{path::CameraPathFollower, CameraPlugin};
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
@@ -12,6 +13,7 @@ mod loading;
 mod game;
 
 pub mod camera;
+pub mod anim;
 
 fn main() {
     
@@ -40,6 +42,10 @@ fn main() {
 fn initialize_essentials(
     mut commands : Commands
 ) {
+    let mut follower = CameraPathFollower::default();
+    
+    follower.push_node(Transform::from_xyz(-0.0, 1.0, 0.841).with_rotation(Quat::from_euler(EulerRot::XYZ, -3.072, -0.02, -3.1403)), 1.0, EasingFunction::EaseInOut);
+    
     // Load the essientials first
     commands.spawn((
         Camera3dBundle {
@@ -53,5 +59,6 @@ fn initialize_essentials(
         RenderLayers::layer(0),
         RoomCamera,
         ActiveCamera,
+        follower
     ));
 }
