@@ -1,5 +1,6 @@
 pub mod path;
 pub mod fly;
+pub mod zone;
 
 use bevy::prelude::*;
 

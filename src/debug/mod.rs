@@ -2,7 +2,7 @@ use bevy::{diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin}, prelude::
 use bevy_debug_text_overlay::{screen_print, OverlayPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::{camera::{fly::ToggleFlyCam, path::CameraPathFollower}, game::GameState};
+use crate::{camera::{fly::ToggleFlyCam, path::CameraPathFollower, zone::CameraZone}, game::GameState};
 
 //==============================================================================
 //         Debug Plugin
@@ -19,7 +19,7 @@ impl Plugin for DebugPlugin {
                 FrameTimeDiagnosticsPlugin,
             ))
             
-            .add_systems(Update, (close_on_esc, display_debug_info, toggle_debug_mode, debug_camera_paths))
+            .add_systems(Update, (close_on_esc, display_debug_info, toggle_debug_mode, debug_camera_paths, debug_camera_zones))
         
             .init_resource::<DebugMode>()
         ;
@@ -91,5 +91,14 @@ fn debug_camera_paths(
         let positions = path_follower.iter_transforms().map(|t| t.target_transform.translation).collect::<Vec<_>>();
         gizmos.linestrip(positions, Color::WHITE);
         gizmos.sphere(transform.translation, transform.rotation, 0.05, Color::AZURE);
+    }
+}
+
+fn debug_camera_zones (
+    mut gizmos: Gizmos,
+    camera_zones: Query<(&Transform, &CameraZone)>,
+) {
+    for (transform, zone) in camera_zones.iter() {
+        gizmos.primitive_3d(zone.bounds, transform.translation, transform.rotation, Color::WHITE);
     }
 }

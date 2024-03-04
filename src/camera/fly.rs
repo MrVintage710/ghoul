@@ -1,6 +1,6 @@
-
 use bevy::{input::mouse::MouseMotion, prelude::*, window::{CursorGrabMode, PrimaryWindow}};
 use bevy_debug_text_overlay::screen_print;
+use bevy_inspector_egui::bevy_egui::{EguiContext, EguiMousePosition};
 
 use crate::game::ActiveCamera;
 
@@ -71,7 +71,7 @@ fn toggle_fly_cam(
 
 fn flycam_control(
     mut flycams : Query<(&mut FlyCam, &mut Transform)>,
-    mut window : Query<&mut Window, With<PrimaryWindow>>,
+    mut window : Query<(&mut Window, &mut EguiContext), With<PrimaryWindow>>,
     mut mouse_motion : EventReader<MouseMotion>,
     mouse_input : Res<ButtonInput<MouseButton>>,
     key_input : Res<ButtonInput<KeyCode>>,
@@ -81,17 +81,18 @@ fn flycam_control(
         screen_print!("FlyCam Active");
     
         if mouse_input.pressed(MouseButton::Left) {
-            let mut window = window.single_mut();
-            window.cursor.grab_mode = CursorGrabMode::Confined;
-            window.cursor.visible = false;
-            
-            for event in mouse_motion.read() {
-                flycam.yaw -= event.delta.x * 0.005;
-                flycam.pitch -= event.delta.y * 0.005;
-                flycam.pitch = flycam.pitch.clamp(-1.5, 1.5);
+            let (mut window, mut egui_context) = window.single_mut();
+            if !egui_context.get_mut().is_pointer_over_area() {
+                window.cursor.grab_mode = CursorGrabMode::Confined;
+                window.cursor.visible = false;
+                for event in mouse_motion.read() {
+                    flycam.yaw -= event.delta.x * 0.005;
+                    flycam.pitch -= event.delta.y * 0.005;
+                    flycam.pitch = flycam.pitch.clamp(-1.5, 1.5);
+                }
             }
         } else {
-            let mut window = window.single_mut();
+            let (mut window, egui_mouse_pos) = window.single_mut();
             window.cursor.grab_mode = CursorGrabMode::None;
             window.cursor.visible = true;
         }

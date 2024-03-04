@@ -1,6 +1,7 @@
 use anim::util::EasingFunction;
 use bevy::{prelude::*, render::view::RenderLayers};
-use camera::{path::CameraPathFollower, CameraPlugin};
+use bevy_inspector_egui::bevy_egui::EguiMousePosition;
+use camera::{path::CameraPathFollower, zone::CameraZoneBundle, CameraPlugin};
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
@@ -61,4 +62,9 @@ fn initialize_essentials(
         ActiveCamera,
         follower
     ));
+    
+    EguiMousePosition;
+    
+    
+    commands.spawn(CameraZoneBundle::default());
 }
