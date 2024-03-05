@@ -2,7 +2,7 @@ pub mod computer_world;
 
 use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, scene::InstanceId};
 use bevy_inspector_egui::bevy_egui::setup_new_windows_system;
-use crate::{game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
+use crate::{camera::blackout::BlackoutTransition, game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
 
 use self::computer_world::{ComputerCamera, ComputerWorldAssets, ComputerWorldPlugin};
 
@@ -128,11 +128,14 @@ fn start_room_initialization(
 
 fn setup_room_scene_when_finished(
     mut commands : Commands,
+    mut fade_in_event : EventWriter<BlackoutTransition>,
     room_scene_assets : Res<RoomSceneAssets>,
     scene_spawner : ResMut<SceneSpawner>,
     named_assets : Query<(&Name, &Parent)>,
-    game_world_assets : Res<ComputerWorldAssets>
+    game_world_assets : Res<ComputerWorldAssets>,
 ) {
+    fade_in_event.send(BlackoutTransition::fade_in(1.0));
+    
     let Some(instance) = room_scene_assets.room_scene else { return };
     
     if scene_spawner.instance_is_ready(instance) {
