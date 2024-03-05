@@ -2,7 +2,9 @@ use std::default;
 
 use bevy::{math::bounding::{Bounded3d, RayCast3d}, prelude::*, window::PrimaryWindow};
 
-use crate::{camera::path::CameraPathFollower, game::ActiveCamera, scene::RoomCamera};
+use crate::{camera::path::CameraPathFollower, game::{ActiveCamera, ToggleGameWorld}, scene::RoomCamera, util::{DelayedEvent, DelayedEventPlugin}};
+
+use super::blackout::BlackoutTransition;
 
 //==============================================================================
 //         CameraZone Plugin
@@ -13,6 +15,7 @@ pub struct CameraZonePlugin;
 impl Plugin for CameraZonePlugin {
     fn build(&self, app: &mut App) {
         app 
+            
             .add_systems(Update, (detect_camera_zone_click, detect_back_up))
             
             .register_type::<CameraZone>()
@@ -79,10 +82,13 @@ pub struct CurrentZone(pub Entity);
 
 fn detect_camera_zone_click(
     mut commands : Commands,
-    window : Query<&Window, With<PrimaryWindow>>,
     mut camera : Query<(Entity, &Camera, &GlobalTransform, &mut CurrentZone), With<ActiveCamera>>,
+    mut fade_event : EventWriter<BlackoutTransition>,
+    mut delayed_world_event : EventWriter<DelayedEvent<ToggleGameWorld>>,
+    window : Query<&Window, With<PrimaryWindow>>,
     camera_zones : Query<(Entity, &CameraZone, &Transform, Option<&Children>)>,
     mouse : Res<ButtonInput<MouseButton>>,
+    
 ) {
     if mouse.just_pressed(MouseButton::Left) {
         let Ok(window) = window.get_single() else { return };
@@ -106,7 +112,13 @@ fn detect_camera_zone_click(
                                *current_zone = CurrentZone(zone_entity);
                            },
                            CameraZoneAction::Computer => {
-                               // commands.spawn().insert(RoomCamera);
+                               commands.entity(cam_entity).insert(CameraPathFollower::to_transform(
+                                   Transform::from_xyz(0.191, 1.078, 1.587)
+                                       .with_rotation(Quat::from_euler(EulerRot::XYZ, 3.127, -0.021, 3.141)), 
+                                   1.0
+                               ));
+                               fade_event.send(BlackoutTransition::fade_out(1.0));
+                               delayed_world_event.send(DelayedEvent::new(ToggleGameWorld, 1.2));
                            }
                        }
                     }

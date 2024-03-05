@@ -2,7 +2,7 @@ use std::{collections::VecDeque, time::Duration};
 
 use bevy::{ecs::{component::Component, system::Commands}, math::{cubic_splines::CubicCurve, Vec3}, prelude::*, reflect};
 
-use crate::anim::util::EasingFunction;
+use crate::util::EasingFunction;
 //==============================================================================
 //         CameraPathFollower
 //==============================================================================

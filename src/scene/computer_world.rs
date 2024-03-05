@@ -133,34 +133,6 @@ fn init_computer_world(
 }
 
 //==============================================================================
-//         Switch to ComputerWorld Event
-//==============================================================================
-
-// #[derive(Event, Debug)]
-// pub struct SwitchToComputerWorld;
-
-// pub fn switch_to_computer_world(
-//     mut commands : Commands,
-//     mut events : EventReader<SwitchToComputerWorld>,
-//     mut computer_world_camera : Query<(Entity, &mut Camera, &mut Projection), (With<ComputerCamera>, Without<RoomCamera>)>,
-//     mut room_camera : Query<(Entity, &mut Camera), (With<RoomCamera>, With<ActiveCamera>, Without<ComputerCamera>)>,
-//     input : Res<ButtonInput<KeyCode>>,
-// ) {
-//     if !events.is_empty() || input.just_pressed(KeyCode::F1) {
-//         let Ok((comp_cam_entity, mut comp_cam, mut comp_projection)) = computer_world_camera.get_single_mut() else { return };
-//         let Ok((room_cam_entity, mut room_cam)) = room_camera.get_single_mut() else { return };
-//         println!("Switching to Computer World");
-//         comp_cam.target = RenderTarget::Window(WindowRef::Primary);
-//         room_cam.is_active = false;
-//         *comp_projection = Projection::default();
-//         commands.entity(room_cam_entity).remove::<ActiveCamera>();
-//         commands.entity(comp_cam_entity).insert(ActiveCamera);
-//     }
-    
-//     events.read();
-// }
-
-//==============================================================================
 //         Marker Components
 //==============================================================================
 

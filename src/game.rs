@@ -2,7 +2,7 @@ use std::default;
 
 use bevy::{prelude::*, render::camera::RenderTarget, window::WindowRef};
 
-use crate::scene::{computer_world::{ComputerCamera, ComputerWorldAssets}, RoomCamera};
+use crate::{scene::{computer_world::{ComputerCamera, ComputerWorldAssets}, RoomCamera}, util::DelayedEventPlugin};
 
 //==============================================================================
 //         Game Plugin
@@ -13,6 +13,8 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_plugins(DelayedEventPlugin::<ToggleGameWorld>::default())
+            
             .add_systems(PostUpdate, switch_game_world)
             
             .init_resource::<GameFlags>()
@@ -87,7 +89,9 @@ pub fn switch_game_world(
     computer_world_assets : Res<ComputerWorldAssets>,
     input : Res<ButtonInput<KeyCode>>,
 ) {
+    
     if !events.is_empty() || input.just_pressed(KeyCode::F1) {
+        println!("Event Recieved");
         let Ok((comp_cam_entity, mut comp_cam, mut comp_projection)) = computer_world_camera.get_single_mut() else { return };
         let Ok((room_cam_entity, mut room_cam)) = room_camera.get_single_mut() else { return };
         
@@ -113,5 +117,5 @@ pub fn switch_game_world(
         current_game_world.toggle();
     }
     
-    events.read();
+    events.clear();
 }

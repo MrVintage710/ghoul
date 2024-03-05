@@ -1,10 +1,9 @@
-use anim::util::EasingFunction;
 use bevy::{prelude::*, render::view::RenderLayers};
-use bevy_inspector_egui::bevy_egui::EguiMousePosition;
 use camera::{path::CameraPathFollower, zone::{CameraZone, CameraZoneBundle, CurrentZone}, CameraPlugin};
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
+use util::EasingFunction;
 
 #[cfg(debug_assertions)]
 mod debug;
@@ -15,6 +14,7 @@ mod game;
 
 pub mod camera;
 pub mod anim;
+pub mod util;
 
 fn main() {
     
