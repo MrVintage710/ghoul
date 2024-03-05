@@ -1,7 +1,7 @@
 use anim::util::EasingFunction;
 use bevy::{prelude::*, render::view::RenderLayers};
 use bevy_inspector_egui::bevy_egui::EguiMousePosition;
-use camera::{path::CameraPathFollower, zone::{CameraZone, CameraZoneBundle}, CameraPlugin};
+use camera::{path::CameraPathFollower, zone::{CameraZone, CameraZoneBundle, CurrentZone}, CameraPlugin};
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
@@ -48,6 +48,25 @@ fn initialize_essentials(
     follower.push_node(Transform::from_xyz(-0.0, 1.0, 0.841).with_rotation(Quat::from_euler(EulerRot::XYZ, -3.072, -0.02, -3.1403)), 1.0, EasingFunction::EaseInOut);
     
     // Load the essientials first
+    let computer_node = commands.spawn(CameraZoneBundle {
+        camera_zone: CameraZone::new(Cuboid::default(), Transform::from_xyz(-0.0, 1.0, 0.841).with_rotation(Quat::from_euler(EulerRot::XYZ, -3.072, -0.02, -3.1403))),
+        spatial_bundle : SpatialBundle {
+            transform: Transform::from_xyz(0.0, 1.0, 2.0),
+            ..Default::default()
+        }
+    }).id();
+    
+    let root = commands.spawn((
+        CameraZoneBundle {
+            camera_zone: CameraZone::new(Cuboid::default(), Transform::from_xyz(-1.0, 1.0, -1.0).with_rotation(Quat::from_euler(EulerRot::XYZ, 0.0, 3.8, 0.0))),
+            spatial_bundle : SpatialBundle {
+                transform: Transform::from_xyz(-1.0, 1.0, -1.0).with_rotation(Quat::from_euler(EulerRot::XYZ, 0.0, 3.8, 0.0)),
+                ..Default::default()
+            },
+        },
+        Name::new("Root Camera Zone")
+    )).add_child(computer_node).id();
+    
     commands.spawn((
         Camera3dBundle {
             transform: Transform::from_xyz(-1.0, 1.0, -1.0).with_rotation(Quat::from_euler(EulerRot::XYZ, 0.0, 3.8, 0.0)),
@@ -60,16 +79,6 @@ fn initialize_essentials(
         RenderLayers::layer(0),
         RoomCamera,
         ActiveCamera,
-        // follower
+        CurrentZone(root)
     ));
-    
-    EguiMousePosition;
-    
-    commands.spawn(CameraZoneBundle {
-        camera_zone: CameraZone::new(Cuboid::default(), Transform::from_xyz(-0.0, 1.0, 0.841).with_rotation(Quat::from_euler(EulerRot::XYZ, -3.072, -0.02, -3.1403))),
-        spatial_bundle : SpatialBundle {
-            transform: Transform::from_xyz(0.0, 1.0, 2.0),
-            ..Default::default()
-        }
-    });
 }

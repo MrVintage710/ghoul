@@ -2,7 +2,7 @@ use bevy::{diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin}, prelude::
 use bevy_debug_text_overlay::{screen_print, OverlayPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::{camera::{fly::ToggleFlyCam, path::CameraPathFollower, zone::CameraZone}, game::GameState};
+use crate::{camera::{fly::ToggleFlyCam, path::CameraPathFollower, zone::{CameraZone, CurrentZone}}, game::{ActiveCamera, GameState}};
 
 //==============================================================================
 //         Debug Plugin
@@ -96,10 +96,22 @@ fn debug_camera_paths(
 
 fn debug_camera_zones (
     mut gizmos: Gizmos,
-    camera_zones: Query<(&GlobalTransform, &CameraZone)>,
+    cameras : Query<&CurrentZone, With<ActiveCamera>>,
+    camera_zones: Query<(&Transform, &CameraZone, Option<&Children>)>,
 ) {
-    for (transform, zone) in camera_zones.iter() {
-        let (_, rotation, translation) = transform.to_scale_rotation_translation();
-        gizmos.primitive_3d(zone.bounds, translation, rotation, Color::WHITE);
+    for current_zone in cameras.iter() {
+        let Ok((_, _, children)) = camera_zones.get(current_zone.0) else { continue };
+        
+        if let Some(children) = children {
+            for child in children.iter() {
+                let Ok((transform, zone, _)) = camera_zones.get(*child) else { continue };
+                // let (_, rotation, translation) = transform.to_scale_rotation_translation();
+                gizmos.primitive_3d(zone.bounds, transform.translation, transform.rotation, Color::WHITE);
+            }
+        }
     }
+    // for (transform, zone) in camera_zones.iter() {
+    //     let (_, rotation, translation) = transform.to_scale_rotation_translation();
+    //     gizmos.primitive_3d(zone.bounds, translation, rotation, Color::WHITE);
+    // }
 }
