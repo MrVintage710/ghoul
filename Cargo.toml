@@ -11,3 +11,5 @@ bevy-ascii = {git = "https://github.com/MrVintage710/bevy-ascii-effect.git"}
 bevy-inspector-egui = "0.23.2"
 bevy-debug-text-overlay = "8.1.0"
 smooth-bevy-cameras = "0.11.0"
+strum = "0.26.1"
+strum_macros = "0.26"

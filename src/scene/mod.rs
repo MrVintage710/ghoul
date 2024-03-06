@@ -2,7 +2,7 @@ pub mod computer_world;
 
 use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, scene::InstanceId};
 use bevy_inspector_egui::bevy_egui::setup_new_windows_system;
-use crate::{camera::blackout::BlackoutTransition, game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
+use crate::{audio::ambient::{AmbientAudioEvent, AmbientAudioType}, camera::blackout::BlackoutTransition, game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
 
 use self::computer_world::{ComputerCamera, ComputerWorldAssets, ComputerWorldPlugin};
 
@@ -43,10 +43,6 @@ pub struct RoomSceneAssets{
     //Models
     room_model : Handle<Scene>,
     
-    //Audio
-    ambient_storm : Handle<AudioSource>,
-    thunder : Handle<AudioSource>,
-    
     //Scene ID
     room_scene : Option<InstanceId>
 }
@@ -59,17 +55,11 @@ fn load_scene(
     
     // Setup for the loading stage
     let room_handle = asset_server.load("models/ghoul_room.glb#Scene0");
-    let ambient_storm_handle = asset_server.load("audio/ambient_rain.ogg");
-    let thunder_handle = asset_server.load("audio/thunder.ogg");
     commands.insert_resource(RoomSceneAssets{
         room_model: room_handle.clone(),
-        ambient_storm: ambient_storm_handle.clone(),
-        thunder: thunder_handle.clone(),
         room_scene: None
     });
     loading_tracker.push(room_handle);
-    loading_tracker.push(ambient_storm_handle);
-    loading_tracker.push(thunder_handle);
 }
 
 //==============================================================================
@@ -99,42 +89,44 @@ fn start_room_initialization(
         Name::new("Room Light")
     ));
     
-    commands.spawn((
-        AudioSourceBundle {
-            source: room_assets.ambient_storm.clone(),
-            settings: PlaybackSettings {
-                mode: PlaybackMode::Loop,
-                volume: Volume::new(0.2),
-                ..Default::default()
-            },
-            ..default()
-        },
-        Name::new("Ambient Storm")
-    ));
+    // commands.spawn((
+    //     AudioSourceBundle {
+    //         source: room_assets.ambient_storm.clone(),
+    //         settings: PlaybackSettings {
+    //             mode: PlaybackMode::Loop,
+    //             volume: Volume::new(0.2),
+    //             ..Default::default()
+    //         },
+    //         ..default()
+    //     },
+    //     Name::new("Ambient Storm")
+    // ));
     
-    commands.spawn((
-        AudioSourceBundle {
-            source: room_assets.thunder.clone(),
-            settings: PlaybackSettings {
-                mode: PlaybackMode::Once,
-                volume: Volume::new(0.3),
-                ..Default::default()
-            },
-            ..default()
-        },
-        Name::new("Lightning")
-    ));
+    // commands.spawn((
+    //     AudioSourceBundle {
+    //         source: room_assets.thunder.clone(),
+    //         settings: PlaybackSettings {
+    //             mode: PlaybackMode::Once,
+    //             volume: Volume::new(0.3),
+    //             ..Default::default()
+    //         },
+    //         ..default()
+    //     },
+    //     Name::new("Lightning")
+    // ));
 }
 
 fn setup_room_scene_when_finished(
     mut commands : Commands,
     mut fade_in_event : EventWriter<BlackoutTransition>,
+    mut ambient_audio_event : EventWriter<AmbientAudioEvent>,
     room_scene_assets : Res<RoomSceneAssets>,
     scene_spawner : ResMut<SceneSpawner>,
     named_assets : Query<(&Name, &Parent)>,
     game_world_assets : Res<ComputerWorldAssets>,
 ) {
     fade_in_event.send(BlackoutTransition::fade_in(1.0));
+    ambient_audio_event.send(AmbientAudioEvent::fade_in(AmbientAudioType::Storm, 1.0, 0.2));
     
     let Some(instance) = room_scene_assets.room_scene else { return };
     

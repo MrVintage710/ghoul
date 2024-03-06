@@ -1,3 +1,4 @@
+use audio::AudioPlugin;
 use bevy::{prelude::*, render::view::RenderLayers};
 use camera::{path::CameraPathFollower, zone::{CameraZone, CameraZoneBundle, CurrentZone}, CameraPlugin};
 use game::{ActiveCamera, GamePlugin};
@@ -15,6 +16,7 @@ mod game;
 pub mod camera;
 pub mod anim;
 pub mod util;
+pub mod audio;
 
 fn main() {
     
@@ -26,6 +28,7 @@ fn main() {
         .add_plugins(GamePlugin)
         .add_plugins(LoadingPlugin)
         .add_plugins(CameraPlugin)
+        .add_plugins(AudioPlugin)
     
         .add_systems(Startup, initialize_essentials)
     ;

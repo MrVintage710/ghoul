@@ -2,7 +2,7 @@ use std::default;
 
 use bevy::{math::bounding::{Bounded3d, RayCast3d}, prelude::*, window::PrimaryWindow};
 
-use crate::{camera::path::CameraPathFollower, game::{ActiveCamera, ToggleGameWorld}, scene::RoomCamera, util::{DelayedEvent, DelayedEventPlugin}};
+use crate::{audio::ambient::{AmbientAudioEvent, AmbientAudioType}, camera::path::CameraPathFollower, game::{ActiveCamera, ToggleGameWorld}, scene::RoomCamera, util::{DelayedEvent, DelayedEventPlugin}};
 
 use super::blackout::BlackoutTransition;
 
@@ -84,6 +84,7 @@ fn detect_camera_zone_click(
     mut commands : Commands,
     mut camera : Query<(Entity, &Camera, &GlobalTransform, &mut CurrentZone), With<ActiveCamera>>,
     mut fade_event : EventWriter<BlackoutTransition>,
+    mut ambient_event : EventWriter<AmbientAudioEvent>,
     mut delayed_world_event : EventWriter<DelayedEvent<ToggleGameWorld>>,
     window : Query<&Window, With<PrimaryWindow>>,
     camera_zones : Query<(Entity, &CameraZone, &Transform, Option<&Children>)>,
@@ -118,6 +119,7 @@ fn detect_camera_zone_click(
                                    1.0
                                ));
                                fade_event.send(BlackoutTransition::fade_out(1.0));
+                               ambient_event.send(AmbientAudioEvent::fade_out(AmbientAudioType::Storm, 1.0));
                                delayed_world_event.send(DelayedEvent::new(ToggleGameWorld, 1.2));
                            }
                        }
