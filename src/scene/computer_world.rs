@@ -1,3 +1,5 @@
+use std::default;
+
 use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*, render::{camera::RenderTarget, mesh::shape::Cube, render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages}, view::RenderLayers}, window::WindowRef};
 use bevy_ascii::prelude::*;
 
@@ -23,6 +25,18 @@ impl Plugin for ComputerWorldPlugin {
             // .add_event::<SwitchToComputerWorld>()
         ;
     }
+}
+
+//==============================================================================
+//         ComputerState
+//==============================================================================
+
+#[derive(Resource, Default)]
+pub enum ComputerState {
+    #[default]
+    Off,
+    OS,
+    Game,
 }
 
 //==============================================================================

@@ -2,7 +2,7 @@ use std::default;
 
 use bevy::{prelude::*, render::camera::RenderTarget, window::WindowRef};
 
-use crate::{scene::{computer_world::{ComputerCamera, ComputerWorldAssets}, RoomCamera}, util::DelayedEventPlugin};
+use crate::{audio::{sound::PlaySoundEvent, AudioAssets}, scene::{computer_world::{ComputerCamera, ComputerWorldAssets}, RoomCamera}, util::DelayedEventPlugin};
 
 //==============================================================================
 //         Game Plugin

@@ -1,10 +1,11 @@
 pub mod ambient;
+pub mod sound;
 
 use bevy::prelude::*;
 
 use crate::loading::LoadingTracker;
 
-use self::ambient::AmbientAudioPlugin;
+use self::{ambient::AmbientAudioPlugin, sound::SoundEffectPlugin};
 
 //==============================================================================
 //         AudioPlugin
@@ -16,6 +17,7 @@ impl Plugin for AudioPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_plugins(AmbientAudioPlugin)
+            .add_plugins(SoundEffectPlugin)
         
             .add_systems(Startup, load_audio)
         ;

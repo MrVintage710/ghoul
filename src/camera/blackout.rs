@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use bevy::{prelude::*, render::view::RenderLayers};
 
+use crate::util::DelayedEventPlugin;
+
 //==============================================================================
 //         Blackout Plugin
 //==============================================================================
@@ -11,6 +13,8 @@ pub struct BlackoutPlugin;
 impl Plugin for BlackoutPlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_plugins(DelayedEventPlugin::<BlackoutTransition>::default())
+            
             .add_systems(Startup, init_blackout)
             .add_systems(PostUpdate, (start_blackout_transition, update_blackout))
         

@@ -2,7 +2,7 @@ pub mod computer_world;
 
 use bevy::{audio::{PlaybackMode, Volume}, gltf::Gltf, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, scene::InstanceId};
 use bevy_inspector_egui::bevy_egui::setup_new_windows_system;
-use crate::{audio::ambient::{AmbientAudioEvent, AmbientAudioType}, camera::blackout::BlackoutTransition, game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
+use crate::{audio::{ambient::{AmbientAudioEvent, AmbientAudioType}, sound::PlaySoundEvent, AudioAssets}, camera::blackout::BlackoutTransition, game::{ActiveCamera, GameState}, loading::{LoadingTracker, SceneTracker}};
 
 use self::computer_world::{ComputerCamera, ComputerWorldAssets, ComputerWorldPlugin};
 
@@ -120,13 +120,16 @@ fn setup_room_scene_when_finished(
     mut commands : Commands,
     mut fade_in_event : EventWriter<BlackoutTransition>,
     mut ambient_audio_event : EventWriter<AmbientAudioEvent>,
+    mut sound_effect_event : EventWriter<PlaySoundEvent>,
     room_scene_assets : Res<RoomSceneAssets>,
     scene_spawner : ResMut<SceneSpawner>,
     named_assets : Query<(&Name, &Parent)>,
     game_world_assets : Res<ComputerWorldAssets>,
+    sounds : Res<AudioAssets>
 ) {
     fade_in_event.send(BlackoutTransition::fade_in(1.0));
     ambient_audio_event.send(AmbientAudioEvent::fade_in(AmbientAudioType::Storm, 1.0, 0.2));
+    sound_effect_event.send(PlaySoundEvent::new(sounds.storm_thunder.clone(), 0.3, None));
     
     let Some(instance) = room_scene_assets.room_scene else { return };
     
