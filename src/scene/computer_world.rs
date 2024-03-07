@@ -3,7 +3,7 @@ use std::default;
 use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*, render::{camera::RenderTarget, mesh::shape::Cube, render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages}, view::RenderLayers}, window::WindowRef};
 use bevy_ascii::prelude::*;
 
-use crate::game::{ActiveCamera, GameState};
+use crate::{game::{ActiveCamera, GameState, GameWorld, OnGameWorldChangeEvent}, ui::boot_screen::LoadingScreenComponent};
 
 use super::{RoomCamera};
 
@@ -19,8 +19,8 @@ impl Plugin for ComputerWorldPlugin {
             .add_plugins(AsciiShaderPlugin)
         
             .add_systems(Startup, init_computer_world)
-            .add_systems(Update, rotate_test_cubes.run_if(in_state(GameState::Active)))
-            // .add_systems(PostUpdate, switch_to_computer_world)
+        
+            .init_resource::<ComputerState>()
         
             // .add_event::<SwitchToComputerWorld>()
         ;
@@ -28,10 +28,17 @@ impl Plugin for ComputerWorldPlugin {
 }
 
 //==============================================================================
+//         Marker Components
+//==============================================================================
+
+#[derive(Debug, Component)]
+pub struct ComputerCamera;
+
+//==============================================================================
 //         ComputerState
 //==============================================================================
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ComputerState {
     #[default]
     Off,
@@ -85,7 +92,7 @@ fn init_computer_world(
     
     let render_surface_image = images.add(image);
     
-    commands.spawn((
+    let camera = commands.spawn((
         Camera3dBundle {
             transform: Transform::from_translation(Vec3::new(0.0, 1.5, 5.0)).looking_at(Vec3::ZERO, Vec3::Y),
             camera : Camera {
@@ -95,9 +102,11 @@ fn init_computer_world(
             ..Default::default()
         },
         AsciiCamera::default(),
+        AsciiUi::default(),
         RenderLayers::layer(1),
+        VisibilityBundle::default(),
         ComputerCamera,
-    ));
+    )).id();
     
     let render_surface_mat = materials.add(StandardMaterial {
         base_color_texture: Some(render_surface_image.clone()),
@@ -110,61 +119,56 @@ fn init_computer_world(
         render_surface_image,
     });
     
-    let mesh = meshes.add(Cube::new(1.0));
-    let red_material = materials.add(Color::RED);
-    
-    commands.spawn((
-        PbrBundle {
-            mesh,
-            material: red_material,
-            ..Default::default()
-        },
-        TestCube,
-        RenderLayers::layer(1)
-    ));
+    commands.ascii_ui_with_parent(camera)
+        .aligned(1.0, 1.0, HorizontalAlignment::Center, VerticalAlignment::Center, LoadingScreenComponent::default())
+            .hidden().insert(RenderLayers::layer(1));
+    ;
     
     // light
-    commands.spawn((
-        DirectionalLightBundle {
-            directional_light: DirectionalLight {
-                shadows_enabled: true,
-                ..default()
-            },
-            // This is a relatively small scene, so use tighter shadow
-            // cascade bounds than the default for better quality.
-            // We also adjusted the shadow map to be larger since we're
-            // only using a single cascade.
-            cascade_shadow_config: CascadeShadowConfigBuilder {
-                num_cascades: 1,
-                maximum_distance: 1.6,
-                ..default()
-            }
-            .into(),
-            ..default()
-        },
-        RenderLayers::layer(1)
-    ));
+    // commands.spawn((
+    //     DirectionalLightBundle {
+    //         directional_light: DirectionalLight {
+    //             shadows_enabled: true,
+    //             ..default()
+    //         },
+    //         // This is a relatively small scene, so use tighter shadow
+    //         // cascade bounds than the default for better quality.
+    //         // We also adjusted the shadow map to be larger since we're
+    //         // only using a single cascade.
+    //         cascade_shadow_config: CascadeShadowConfigBuilder {
+    //             num_cascades: 1,
+    //             maximum_distance: 1.6,
+    //             ..default()
+    //         }
+    //         .into(),
+    //         ..default()
+    //     },
+    //     RenderLayers::layer(1)
+    // ));
 }
 
 //==============================================================================
-//         Marker Components
+//         ComputerWorld Systems
 //==============================================================================
 
-#[derive(Debug, Component)]
-pub struct ComputerCamera;
-
-//==============================================================================
-//         Test
-//==============================================================================
-
-#[derive(Component)]
-struct TestCube;
-
-fn rotate_test_cubes(
-    time : Res<Time>,
-    mut query : Query<&mut Transform, With<TestCube>>,
+fn on_enter_computer_world(
+    mut gameworld_change_events : EventReader<OnGameWorldChangeEvent>,
+    computer_state : Res<ComputerState>,
 ) {
-    for mut transform in query.iter_mut() {
-        transform.rotate(Quat::from_rotation_y(time.delta_seconds()));
+    for game_world_change_event in gameworld_change_events.read() {
+        if game_world_change_event.0 == GameWorld::Computer {
+            match *computer_state {
+                ComputerState::Off => todo!(),
+                ComputerState::OS => {},
+                ComputerState::Game => {},
+            }
+            
+            println!("Entering Computer World");
+        }
     }
 }
+
+//==============================================================================
+//         BootUp Computer
+//==============================================================================
+

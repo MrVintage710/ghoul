@@ -73,6 +73,10 @@ pub enum AmbientAudioEvent {
         audio_type : AmbientAudioType,
         timer : Timer,
         target_volume : f32
+    },
+    Play {
+        audio_type : AmbientAudioType,
+        volume : f32
     }
 }
 
@@ -102,11 +106,19 @@ impl AmbientAudioEvent {
         }
     }
     
+    pub fn play(audio_type : AmbientAudioType, volume : f32) -> Self {
+        Self::Play {
+            audio_type,
+            volume
+        }
+    }
+    
     pub fn ambient_type(&self) -> AmbientAudioType {
         match self {
             Self::VolumeFade { audio_type : event_type, .. } => *event_type,
             Self::FadeOut { audio_type : event_type, .. } => *event_type,
-            Self::FadeIn { audio_type : event_type, .. } => *event_type
+            Self::FadeIn { audio_type : event_type, .. } => *event_type,
+            Self::Play { audio_type : event_type, .. } => *event_type
         }
     }
     
@@ -114,7 +126,8 @@ impl AmbientAudioEvent {
         match self {
             Self::VolumeFade { starting_volume : volume, .. } => *volume = starting_volume,
             Self::FadeOut { starting_volume : volume, .. } => *volume = starting_volume,
-            Self::FadeIn { .. } => {}
+            Self::FadeIn { .. } => {},
+            Self::Play { .. } => {},
         }
     }
     
@@ -122,7 +135,8 @@ impl AmbientAudioEvent {
         match self {
             Self::VolumeFade { starting_volume, .. } => *starting_volume,
             Self::FadeOut { starting_volume, .. } => *starting_volume,
-            Self::FadeIn { .. } => 0.0
+            Self::FadeIn { .. } => 0.0,
+            Self::Play { .. } => 0.0,
         }
     }
 }
@@ -181,6 +195,11 @@ fn update_ambient_audio_events(
                 if timer.tick(time.delta()).just_finished() {
                     commands.entity(source_entity).remove::<AmbientAudioEvent>();
                 }
+            }
+            AmbientAudioEvent::Play { volume, .. } => {
+                playback.play();
+                playback.set_volume(*volume);
+                commands.entity(source_entity).remove::<AmbientAudioEvent>();
             }
         }
     }

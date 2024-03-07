@@ -13,7 +13,8 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_plugins(DelayedEventPlugin::<ToggleGameWorld>::default())
+            .add_plugins(DelayedEventPlugin::<ToggleGameWorldEvent>::default())
+            .add_plugins(DelayedEventPlugin::<OnGameWorldChangeEvent>::default())
             
             .add_systems(PostUpdate, switch_game_world)
             
@@ -22,7 +23,8 @@ impl Plugin for GamePlugin {
             
             .init_state::<GameState>()
         
-            .add_event::<ToggleGameWorld>()
+            .add_event::<ToggleGameWorldEvent>()
+            .add_event::<OnGameWorldChangeEvent>()
         ;
     }
 }
@@ -58,9 +60,9 @@ pub struct ActiveCamera;
 //         Current GameWorld
 //==============================================================================
 
-#[derive(Default)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GameWorld {
-    Game,
+    Computer,
     #[default]
     Room
 }
@@ -71,21 +73,22 @@ pub struct CurrentGameWorld(GameWorld);
 impl CurrentGameWorld {
     pub fn toggle(&mut self) {
         self.0 = match self.0 {
-            GameWorld::Game => GameWorld::Room,
-            GameWorld::Room => GameWorld::Game,
+            GameWorld::Computer => GameWorld::Room,
+            GameWorld::Room => GameWorld::Computer,
         }
     }
 }
 
 #[derive(Event, Debug, Clone, Copy)]
-pub struct ToggleGameWorld;
+pub struct ToggleGameWorldEvent;
 
 pub fn switch_game_world(
     mut commands : Commands,
     mut computer_world_camera : Query<(Entity, &mut Camera, &mut Projection), (With<ComputerCamera>, Without<RoomCamera>)>,
     mut room_camera : Query<(Entity, &mut Camera), (With<RoomCamera>, Without<ComputerCamera>)>,
     mut current_game_world : ResMut<CurrentGameWorld>,
-    mut events : EventReader<ToggleGameWorld>,
+    mut events : EventReader<ToggleGameWorldEvent>,
+    mut on_game_world_change_events : EventWriter<OnGameWorldChangeEvent>,
     computer_world_assets : Res<ComputerWorldAssets>,
     input : Res<ButtonInput<KeyCode>>,
 ) {
@@ -103,14 +106,16 @@ pub fn switch_game_world(
                 room_cam.is_active = false;
                 commands.entity(room_cam_entity).remove::<ActiveCamera>();
                 commands.entity(comp_cam_entity).insert(ActiveCamera);
+                on_game_world_change_events.send(OnGameWorldChangeEvent(GameWorld::Computer));
             },
-            GameWorld::Game => {
+            GameWorld::Computer => {
                 comp_cam.target = RenderTarget::Image(computer_world_assets.render_surface_image.clone());
                 *comp_projection = Projection::default();
                 
                 room_cam.is_active = true;
                 commands.entity(comp_cam_entity).remove::<ActiveCamera>();
                 commands.entity(room_cam_entity).insert(ActiveCamera);
+                on_game_world_change_events.send(OnGameWorldChangeEvent(GameWorld::Room));
             },
         }
         
@@ -119,3 +124,10 @@ pub fn switch_game_world(
     
     events.clear();
 }
+
+//==============================================================================
+//         OnGameWorldChange
+//==============================================================================
+
+#[derive(Event, Clone)]
+pub struct OnGameWorldChangeEvent(pub GameWorld);

@@ -129,7 +129,7 @@ fn setup_room_scene_when_finished(
 ) {
     fade_in_event.send(BlackoutTransition::fade_in(1.0));
     ambient_audio_event.send(AmbientAudioEvent::fade_in(AmbientAudioType::Storm, 1.0, 0.2));
-    sound_effect_event.send(PlaySoundEvent::new(sounds.storm_thunder.clone(), 0.3, None));
+    // sound_effect_event.send(PlaySoundEvent::new(sounds.storm_thunder.clone(), 0.3, None));
     
     let Some(instance) = room_scene_assets.room_scene else { return };
     

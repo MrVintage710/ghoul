@@ -4,6 +4,7 @@ use camera::{path::CameraPathFollower, zone::{CameraZone, CameraZoneBundle, Curr
 use game::{ActiveCamera, GamePlugin};
 use loading::LoadingPlugin;
 use scene::{RoomCamera, ScenePlugin};
+use ui::UiPlugin;
 use util::EasingFunction;
 
 #[cfg(debug_assertions)]
@@ -17,6 +18,7 @@ pub mod camera;
 pub mod anim;
 pub mod util;
 pub mod audio;
+pub mod ui;
 
 fn main() {
     
@@ -29,6 +31,7 @@ fn main() {
         .add_plugins(LoadingPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(AudioPlugin)
+        .add_plugins(UiPlugin)
     
         .add_systems(Startup, initialize_essentials)
     ;
