@@ -138,14 +138,14 @@ fn detect_back_up(
 ) {
     if key_input.just_pressed(KeyCode::Escape) || key_input.just_pressed(KeyCode::Backspace){
         let Ok((cam_entity, mut current_zone)) = camera.get_single_mut() else { return };
-        let Ok((zone_entity, _, parent)) = camera_zones.get(current_zone.0) else { return };
+        let Ok((_, _, parent)) = camera_zones.get(current_zone.0) else { return };
         
         if let Some(parent) = parent {
-            let Ok((_, camera_zone, _)) = camera_zones.get(**parent) else { return };
+            let Ok((parent_entity, camera_zone, _)) = camera_zones.get(**parent) else { return };
             match camera_zone.event {
                 CameraZoneAction::Move(target_transform) => {
                     commands.entity(cam_entity).insert(CameraPathFollower::to_transform(target_transform, 1.0));
-                    *current_zone = CurrentZone(zone_entity);
+                    *current_zone = CurrentZone(parent_entity);
                 },
                 _ => {}
             }

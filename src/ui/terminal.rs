@@ -7,11 +7,11 @@ use super::commands::TerminalCommandEvent;
 
 #[derive(Component)]
 pub struct TerminalComponent {
-    lines : VecDeque<String>,
-    current_input : String,
-    scroll : u32,
-    blink_timer : Timer,
-    blink : bool,
+    pub lines : VecDeque<String>,
+    pub current_input : String,
+    pub scroll : u32,
+    pub blink_timer : Timer,
+    pub blink : bool,
 }
 
 impl TerminalComponent {
@@ -96,7 +96,7 @@ fn terminal_input (
     
     let pressed_enter = key_input.just_pressed(KeyCode::Enter);
     let pressed_backspace = key_input.just_pressed(KeyCode::Backspace);
-    let mut input_string = char_input.read().fold(String::new(), |mut accum, value| {
+    let input_string = char_input.read().fold(String::new(), |mut accum, value| {
         for c in value.char.as_str().chars() {
             match bevy_ascii::prelude::Character::from(c) {
                 Character::Nil | 
@@ -107,7 +107,7 @@ fn terminal_input (
         }
         
         accum
-    });
+    }).to_lowercase();
     let mouse_delta = scroll_event.read().fold(0.0, |accum, value| accum + value.y) * 0.25;
     
     terminal.blink_timer.tick(time.delta());
@@ -122,8 +122,6 @@ fn terminal_input (
         
         terminal.scroll = (terminal.scroll as f32 + mouse_delta.round()) as u32;
         terminal.scroll = terminal.scroll.min((terminal.lines.len() as i32 - node.bounds.height as i32 + 7).max(0) as u32);
-        
-        println!("{}", terminal.scroll);
         
         terminal.current_input.push_str(&input_string);
         if !input_string.is_empty(){
@@ -143,7 +141,7 @@ fn terminal_input (
                 terminal.lines.pop_front();
             }
             terminal.current_input.clear();
-            terminal_command_event.send(TerminalCommandEvent(input));
+            terminal_command_event.send(TerminalCommandEvent(input.trim().to_string()));
             terminal.scroll = 0;
         }
         
