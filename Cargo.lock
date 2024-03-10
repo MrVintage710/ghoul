@@ -21,9 +21,9 @@ checksum = "c71b1793ee61086797f5c80b6efa2b8ffa6d5dd703f118545808a7f2e27f7046"
 
 [[package]]
 name = "accesskit"
-version = "0.12.2"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6cb10ed32c63247e4e39a8f42e8e30fb9442fbf7878c8e4a9849e7e381619bea"
+checksum = "74a4b14f3d99c1255dcba8f45621ab1a2e7540a0009652d33989005a4d0bfc6b"
 
 [[package]]
 name = "accesskit_consumer"
@@ -320,7 +320,7 @@ dependencies = [
 [[package]]
 name = "bevy-ascii"
 version = "0.1.0"
-source = "git+https://github.com/MrVintage710/bevy-ascii-effect.git#b92e9a4a621011d9cb9885edb51c9afe09a03721"
+source = "git+https://github.com/MrVintage710/bevy-ascii-effect.git#aad1303af97778e9a65400ba0edabee64b5e0b11"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
@@ -1262,9 +1262,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.15.3"
+version = "3.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ea184aa71bb362a1157c896979544cc23974e08fd265f29ea96b59f0b4a555b"
+checksum = "7ff69b9dd49fd426c69a0db9fc04dd934cdb6645ff000864d98f7e2af8830eaa"
 
 [[package]]
 name = "bytemuck"

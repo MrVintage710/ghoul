@@ -7,6 +7,8 @@ use bevy_debug_text_overlay::screen_print;
 
 use crate::{audio::{ambient::{AmbientAudioEvent, AmbientAudioType}, sound::PlaySoundEvent, AudioAssets}, game::OnGameWorldChangeEvent, scene::computer_world::ComputerState, util::DelayedEvent};
 
+use super::terminal::TerminalComponent;
+
 //==============================================================================
 //         loading Screen components
 //==============================================================================
@@ -30,17 +32,33 @@ impl AsciiComponent for LoadingScreenComponent {
     type UpdateQuery<'w, 's> = ();
     
     fn render(&self, buffer: &mut AsciiBuffer) {
-        println!("Rendering!");
         let elapsed = self.progress.elapsed_secs();
         
-        let text = match elapsed {
-            ..=0.5 => "Initializing boot...",
-            0.5..=1.0 => "Initializing boot...\nLoading G64 unified Os...",
-            1.0..=1.5 => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...",
-            1.5..=2.0 => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...\nG64 Power+ APU detected...",
-            2.0.. => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...\nG64 Power+ APU detected...\nLoading Interface...",
-            _ => ""
-        };
+        if elapsed <= 2.5 {
+            let text = match elapsed {
+                ..=0.8 => "Initializing boot...",
+                0.8..=1.5 => "Initializing boot...\nLoading G64 unified Os...",
+                1.5..=1.8 => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...",
+                1.8..=2.0 => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...\nG64 Power+ APU detected...",
+                2.0.. => "Initializing boot...\nLoading G64 unified Os...\n64MB RAM detected...\nG64 Power+ APU detected...\nLoading Interface...",
+                _ => ""
+            };
+            
+            buffer.padding((1, 1, 1, 1)).text(text).draw();
+        } else {
+            let progress = ((elapsed - 2.5) / 0.5).min(1.0);
+            
+            let width = (progress * 22.0).round() as i32;
+            let height = 10;
+            
+            let inner = buffer.center(width, height).square().border(BorderType::Full).draw();
+            
+            if progress >= 1.0 {
+               if let Some(inner) = inner {
+                   inner.text("G64+ Pro").horizontal_alignment(HorizontalAlignment::Center).vertical_alignment(VerticalAlignment::Center).draw();
+               }
+            }
+        }
         
       //   ____  __   _  _   
       //  / ___|/ /_ | || |  
@@ -48,7 +66,7 @@ impl AsciiComponent for LoadingScreenComponent {
       // | |_| | (_) |__   _|
       //  \____|\___/   |_| 
         
-        buffer.text(text).draw();
+        
         
     }
 
@@ -83,7 +101,8 @@ fn begin_startup(
 }
 
 fn update_loading_screen (
-    mut loading_screens: Query<(&mut LoadingScreenComponent, &AsciiNode, &mut Visibility)>,
+    mut loading_screens: Query<(&mut LoadingScreenComponent, &AsciiNode, &mut Visibility), Without<TerminalComponent>>,
+    mut terminals: Query<(&mut TerminalComponent, &AsciiNode, &mut Visibility), Without<LoadingScreenComponent>>,
     mut computer_state : ResMut<ComputerState>,
     mut mark_dirty : EventWriter<AsciiMarkDirtyEvent>,
     time : Res<Time>,
@@ -98,6 +117,9 @@ fn update_loading_screen (
                 loading_screen.progress.reset();
                 *vis = Visibility::Hidden;
                 *computer_state = ComputerState::OS;
+                for (_, _, mut visability) in terminals.iter_mut() {
+                    *visability = Visibility::Visible;
+                }
             }
         }
     }

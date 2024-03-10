@@ -3,7 +3,7 @@ use std::default;
 use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*, render::{camera::RenderTarget, mesh::shape::Cube, render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages}, view::RenderLayers}, window::WindowRef};
 use bevy_ascii::prelude::*;
 
-use crate::{game::{ActiveCamera, GameState, GameWorld, OnGameWorldChangeEvent}, ui::boot_screen::LoadingScreenComponent};
+use crate::{game::{ActiveCamera, GameState, GameWorld, OnGameWorldChangeEvent}, ui::{boot_screen::LoadingScreenComponent, terminal::TerminalComponent}};
 
 use super::{RoomCamera};
 
@@ -120,9 +120,14 @@ fn init_computer_world(
     });
     
     commands.ascii_ui_with_parent(camera)
-        .aligned(1.0, 1.0, HorizontalAlignment::Center, VerticalAlignment::Center, LoadingScreenComponent::default())
-            .hidden().insert(RenderLayers::layer(1));
+        .fill(LoadingScreenComponent::default())
+            .hidden().insert(RenderLayers::layer(1))
+        .pop()
+        .fill(TerminalComponent::default())
+            .hidden().insert(RenderLayers::layer(1))
+        .pop()
     ;
+    
     
     // light
     // commands.spawn((
